@@ -272,14 +272,11 @@ bool unload_filament(const float &unload_length, const bool show_lcd/*=false*/,
     UNUSED(show_lcd);
   #endif
 
-  // Retract filament
-  do_pause_e_move(-FILAMENT_UNLOAD_RETRACT_LENGTH, PAUSE_PARK_RETRACT_FEEDRATE);
-
-  // Wait for filament to cool
-  safe_delay(FILAMENT_UNLOAD_DELAY);
-
   // Quickly purge
-  do_pause_e_move(FILAMENT_UNLOAD_RETRACT_LENGTH + FILAMENT_UNLOAD_PURGE_LENGTH, planner.settings.max_feedrate_mm_s[E_AXIS]);
+  do_pause_e_move(FILAMENT_UNLOAD_PURGE_LENGTH, PAUSE_PARK_RETRACT_FEEDRATE);
+
+  // Retract filament
+  do_pause_e_move(-(FILAMENT_UNLOAD_RETRACT_LENGTH + FILAMENT_UNLOAD_PURGE_LENGTH), PAUSE_PARK_RETRACT_FEEDRATE);
 
   // Unload filament
   #if FILAMENT_CHANGE_UNLOAD_ACCEL > 0

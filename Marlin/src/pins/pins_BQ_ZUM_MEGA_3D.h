@@ -65,7 +65,9 @@
 // Z Probe (when not Z_MIN_PIN)
 //
 #undef Z_MIN_PROBE_PIN
-#define Z_MIN_PROBE_PIN    19   // IND_S_5V
+#define Z_MIN_PROBE_PIN    18   // IND_S_5V
+#undef SERVO0_PIN
+#define SERVO0_PIN 59
 
 #undef Z_ENABLE_PIN
 #define Z_ENABLE_PIN       77   // 62
@@ -98,12 +100,12 @@
 // decided to ship the printer only with the probe and no additional Z-min
 // endstop and the instruction manual advises the user to connect the probe to
 // IND_S_5V the option Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN will not work.
-#ifdef Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN
+/*#ifdef Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN
   #undef Z_MIN_PIN
   #undef Z_MAX_PIN
   #define Z_MIN_PIN        19   // IND_S_5V
   #define Z_MAX_PIN        18   // Z-MIN Label
-#endif
+#endif*/
 
 //
 // Used by the Hephestos 2 heated bed upgrade kit

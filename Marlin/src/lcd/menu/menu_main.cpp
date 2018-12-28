@@ -65,13 +65,6 @@
     ui.return_to_status();
   }
 
-  void menu_sdcard_abort_confirm() {
-    START_MENU();
-    MENU_BACK(MSG_MAIN);
-    MENU_ITEM(function, MSG_STOP_PRINT, lcd_sdcard_stop);
-    END_MENU();
-  }
-
 #endif // SDSUPPORT
 
 void menu_tune();
@@ -95,8 +88,7 @@ void menu_main() {
           MENU_ITEM(function, MSG_PAUSE_PRINT, lcd_sdcard_pause);
         else
           MENU_ITEM(function, MSG_RESUME_PRINT, lcd_sdcard_resume);
-
-        MENU_ITEM(submenu, MSG_STOP_PRINT, menu_sdcard_abort_confirm);
+        MENU_ITEM(function, MSG_STOP_PRINT, lcd_sdcard_stop);
       }
       else {
         MENU_ITEM(submenu, MSG_CARD_MENU, menu_sdcard);
