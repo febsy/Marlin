@@ -90,7 +90,16 @@ void lcd_stop() {
   ui.return_to_status();
 }
 
-#endif // SDSUPPORT
+void menu_abort_confirm() {
+  START_MENU();
+  MENU_BACK(MSG_MAIN);
+  MENU_ITEM(function, MSG_STOP_PRINT, lcd_stop);
+  END_MENU();
+}
+
+#if ENABLED(PRUSA_MMU2)
+  #include "../../lcd/menu/menu_mmu2.h"
+#endif
 
 void menu_tune();
 void menu_motion();
@@ -122,14 +131,36 @@ void menu_main() {
   START_MENU();
   MENU_BACK(MSG_WATCH);
 
-  #if ENABLED(SDSUPPORT)
-    if (card.flag.cardOK) {
-      if (card.isFileOpen()) {
-        if (IS_SD_PRINTING())
-          MENU_ITEM(function, MSG_PAUSE_PRINT, lcd_sdcard_pause);
-        else
-          MENU_ITEM(function, MSG_RESUME_PRINT, lcd_sdcard_resume);
-        MENU_ITEM(function, MSG_STOP_PRINT, lcd_sdcard_stop);
+  const bool busy = printer_busy()
+    #if ENABLED(SDSUPPORT)
+      , card_detected = card.isDetected()
+      , card_open = card_detected && card.isFileOpen()
+    #endif
+  ;
+
+  if (busy) {
+    MENU_ITEM(function, MSG_PAUSE_PRINT, lcd_pause);
+    #if ENABLED(SDSUPPORT) || defined(ACTION_ON_CANCEL)
+      MENU_ITEM(submenu, MSG_STOP_PRINT, menu_abort_confirm);
+    #endif
+    MENU_ITEM(submenu, MSG_TUNE, menu_tune);
+  }
+  else {
+    #if !HAS_ENCODER_WHEEL && ENABLED(SDSUPPORT)
+      //
+      // Autostart
+      //
+      #if ENABLED(MENU_ADDAUTOSTART)
+        if (!busy) MENU_ITEM(function, MSG_AUTOSTART, card.beginautostart);
+      #endif
+
+      if (card_detected) {
+        if (!card_open) {
+          MENU_ITEM(submenu, MSG_CARD_MENU, menu_sdcard);
+          #if !PIN_EXISTS(SD_DETECT)
+            MENU_ITEM(gcode, MSG_CHANGE_SDCARD, PSTR("M21"));  // SD-card changed by user
+          #endif
+        }
       }
       else {
         #if !PIN_EXISTS(SD_DETECT)

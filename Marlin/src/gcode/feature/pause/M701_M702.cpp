@@ -187,4 +187,4 @@ void GcodeSuite::M702() {
   #endif
 }
 
-#endif // ADVANCED_PAUSE_FEATURE
+//#endif // ADVANCED_PAUSE_FEATURE
