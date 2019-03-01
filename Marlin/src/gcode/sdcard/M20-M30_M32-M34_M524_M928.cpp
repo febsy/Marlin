@@ -1,6 +1,6 @@
 /**
  * Marlin 3D Printer Firmware
- * Copyright (C) 2016 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
+ * Copyright (C) 2019 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
  *
  * Based on Sprinter and grbl.
  * Copyright (C) 2011 Camiel Gubbels / Erik van der Zalm
@@ -42,21 +42,17 @@
   #include "../queue.h"
 #endif
 
+#if ENABLED(HOST_ACTION_COMMANDS)
+  #include "../../feature/host_actions.h"
+#endif
+
 /**
  * M20: List SD card to serial output
  */
 void GcodeSuite::M20() {
-  #if NUM_SERIAL > 1
-    const int16_t port = command_queue_port[cmd_queue_index_r];
-  #endif
-
-  SERIAL_ECHOLNPGM_P(port, MSG_BEGIN_FILE_LIST);
-  card.ls(
-    #if NUM_SERIAL > 1
-      port
-    #endif
-  );
-  SERIAL_ECHOLNPGM_P(port, MSG_END_FILE_LIST);
+  SERIAL_ECHOLNPGM(MSG_BEGIN_FILE_LIST);
+  card.ls();
+  SERIAL_ECHOLNPGM(MSG_END_FILE_LIST);
 }
 
 /**
@@ -85,17 +81,33 @@ void GcodeSuite::M23() {
  * M24: Start or Resume SD Print
  */
 void GcodeSuite::M24() {
-  #if ENABLED(PARK_HEAD_ON_PAUSE)
-    resume_print();
-  #endif
 
   #if ENABLED(POWER_LOSS_RECOVERY)
     if (parser.seenval('S')) card.setIndex(parser.value_long());
     if (parser.seenval('T')) print_job_timer.resume(parser.value_long());
   #endif
 
-  card.startFileprint();
-  print_job_timer.start();
+  #if ENABLED(PARK_HEAD_ON_PAUSE)
+    if (did_pause_print) {
+      resume_print();
+      return;
+    }
+  #endif
+
+  if (card.isFileOpen()) {
+    card.startFileprint();
+    print_job_timer.start();
+  }
+
+  #if ENABLED(HOST_ACTION_COMMANDS)
+    #if ENABLED(HOST_PROMPT_SUPPORT)
+      host_prompt_open(PROMPT_INFO, PSTR("Resume SD"));
+    #endif
+    #ifdef ACTION_ON_RESUME
+      host_action_resume();
+    #endif
+  #endif
+
   ui.reset_status();
 }
 
@@ -103,12 +115,30 @@ void GcodeSuite::M24() {
  * M25: Pause SD Print
  */
 void GcodeSuite::M25() {
+
+  // Set initial pause flag to prevent more commands from landing in the queue while we try to pause
+  #if ENABLED(SDSUPPORT)
+    if (IS_SD_PRINTING()) card.pauseSDPrint();
+  #endif
+
   #if ENABLED(PARK_HEAD_ON_PAUSE)
+
     M125();
+
   #else
-    card.pauseSDPrint();
+
     print_job_timer.pause();
     ui.reset_status();
+
+    #if ENABLED(HOST_ACTION_COMMANDS)
+      #if ENABLED(HOST_PROMPT_SUPPORT)
+        host_prompt_open(PROMPT_PAUSE_RESUME, PSTR("Pause SD"), PSTR("Resume"));
+      #endif
+      #ifdef ACTION_ON_PAUSE
+        host_action_pause();
+      #endif
+    #endif
+
   #endif
 }
 
@@ -116,7 +146,7 @@ void GcodeSuite::M25() {
  * M26: Set SD Card file index
  */
 void GcodeSuite::M26() {
-  if (card.flag.cardOK && parser.seenval('S'))
+  if (card.isDetected() && parser.seenval('S'))
     card.setIndex(parser.value_long());
 }
 
@@ -126,30 +156,18 @@ void GcodeSuite::M26() {
  *      OR, with 'C' get the current filename.
  */
 void GcodeSuite::M27() {
-  #if NUM_SERIAL > 1
-    const int16_t port = command_queue_port[cmd_queue_index_r];
-  #endif
-
   if (parser.seen('C')) {
-    SERIAL_ECHOPGM_P(port, "Current file: ");
+    SERIAL_ECHOPGM("Current file: ");
     card.printFilename();
   }
 
   #if ENABLED(AUTO_REPORT_SD_STATUS)
     else if (parser.seenval('S'))
-      card.set_auto_report_interval(parser.value_byte()
-        #if NUM_SERIAL > 1
-          , port
-        #endif
-      );
+      card.set_auto_report_interval(parser.value_byte());
   #endif
 
   else
-    card.getStatus(
-      #if NUM_SERIAL > 1
-        port
-      #endif
-    );
+    card.report_status();
 }
 
 /**
@@ -157,15 +175,7 @@ void GcodeSuite::M27() {
  */
 void GcodeSuite::M28() {
 
-  #if ENABLED(FAST_FILE_TRANSFER)
-
-    const int16_t port =
-      #if NUM_SERIAL > 1
-        command_queue_port[cmd_queue_index_r]
-      #else
-        0
-      #endif
-    ;
+  #if ENABLED(BINARY_FILE_TRANSFER)
 
     bool binary_mode = false;
     char *p = parser.string_arg;
@@ -177,12 +187,12 @@ void GcodeSuite::M28() {
 
     // Binary transfer mode
     if ((card.flag.binary_mode = binary_mode)) {
-      SERIAL_ECHO_START_P(port);
-      SERIAL_ECHO_P(port, " preparing to receive: ");
-      SERIAL_ECHOLN_P(port, p);
+      SERIAL_ECHO_START();
+      SERIAL_ECHO(" preparing to receive: ");
+      SERIAL_ECHOLN(p);
       card.openFile(p, false);
       #if NUM_SERIAL > 1
-        card.transfer_port = port;
+        card.transfer_port_index = command_queue_port[cmd_queue_index_r];
       #endif
     }
     else
@@ -200,14 +210,14 @@ void GcodeSuite::M28() {
  * Processed in write to file routine
  */
 void GcodeSuite::M29() {
-  // card.flag.saving = false;
+  card.flag.saving = false;
 }
 
 /**
  * M30 <filename>: Delete SD Card file
  */
 void GcodeSuite::M30() {
-  if (card.flag.cardOK) {
+  if (card.isDetected()) {
     card.closefile();
     card.removeFile(parser.string_arg);
   }
@@ -226,7 +236,7 @@ void GcodeSuite::M30() {
 void GcodeSuite::M32() {
   if (IS_SD_PRINTING()) planner.synchronize();
 
-  if (card.flag.cardOK) {
+  if (card.isDetected()) {
     const bool call_procedure = parser.boolval('P');
 
     card.openFile(parser.string_arg, true, call_procedure);
@@ -255,11 +265,7 @@ void GcodeSuite::M32() {
    *   /Miscellaneous/Armchair/Armchair.gcode
    */
   void GcodeSuite::M33() {
-    card.printLongPath(parser.string_arg
-      #if NUM_SERIAL > 1
-        , command_queue_port[cmd_queue_index_r]
-      #endif
-    );
+    card.printLongPath(parser.string_arg);
   }
 
 #endif // LONG_FILENAME_HOST_SUPPORT
