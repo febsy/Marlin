@@ -150,6 +150,8 @@
   #include "ramps/pins_RUMBA_RAISE3D.h"         // ATmega2560                             env:megaatmega2560
 #elif MB(RL200)
   #include "ramps/pins_RL200.h"                 // ATmega2560                             env:megaatmega2560
+#elif MB(BQ_CNC)
+  #include "ramps/pins_BQ_CNC.h"                // ATmega2560                             env:megaatmega2560
 #elif MB(BQ_ZUM_MEGA_3D)
   #include "ramps/pins_BQ_ZUM_MEGA_3D.h"        // ATmega2560                             env:megaatmega2560
 #elif MB(MAKEBOARD_MINI)

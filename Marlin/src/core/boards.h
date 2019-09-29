@@ -80,23 +80,24 @@
 #define BOARD_FORMBOT_TREX3           1126  // Formbot T-Rex 3
 #define BOARD_FORMBOT_RAPTOR          1127  // Formbot Raptor
 #define BOARD_FORMBOT_RAPTOR2         1128  // Formbot Raptor 2
-#define BOARD_BQ_ZUM_MEGA_3D          1129  // bq ZUM Mega 3D
-#define BOARD_MAKEBOARD_MINI          1130  // MakeBoard Mini v2.1.2 is a control board sold by MicroMake
-#define BOARD_TRIGORILLA_13           1131  // TriGorilla Anycubic version 1.3-based on RAMPS EFB
-#define BOARD_TRIGORILLA_14           1132  //   ... Ver 1.4
-#define BOARD_TRIGORILLA_14_11        1133  //   ... Rev 1.1 (new servo pin order)
-#define BOARD_RAMPS_ENDER_4           1134  // Creality: Ender-4, CR-8
-#define BOARD_RAMPS_CREALITY          1135  // Creality: CR10S, CR20, CR-X
-#define BOARD_RAMPS_DAGOMA            1136  // Dagoma F5
-#define BOARD_FYSETC_F6_13            1137  // FYSETC F6
-#define BOARD_DUPLICATOR_I3_PLUS      1138  // Wanhao Duplicator i3 Plus
-#define BOARD_VORON                   1139  // VORON Design
-#define BOARD_TRONXY_V3_1_0           1140  // Tronxy TRONXY-V3-1.0
-#define BOARD_Z_BOLT_X_SERIES         1141  // Z-Bolt X Series
-#define BOARD_TT_OSCAR                1142  // TT OSCAR
-#define BOARD_OVERLORD                1143  // Overlord/Overlord Pro
-#define BOARD_HJC2560C_REV1           1144  // ADIMLab Gantry v1
-#define BOARD_HJC2560C_REV2           1145  // ADIMLab Gantry v2
+#define BOARD_BQ_CNC                  1129  // bq ZUM CNC
+#define BOARD_BQ_ZUM_MEGA_3D          1130  // bq ZUM Mega 3D
+#define BOARD_MAKEBOARD_MINI          1131  // MakeBoard Mini v2.1.2 is a control board sold by MicroMake
+#define BOARD_TRIGORILLA_13           1132  // TriGorilla Anycubic version 1.3-based on RAMPS EFB
+#define BOARD_TRIGORILLA_14           1133  //   ... Ver 1.4
+#define BOARD_TRIGORILLA_14_11        1134  //   ... Rev 1.1 (new servo pin order)
+#define BOARD_RAMPS_ENDER_4           1135  // Creality: Ender-4, CR-8
+#define BOARD_RAMPS_CREALITY          1136  // Creality: CR10S, CR20, CR-X
+#define BOARD_RAMPS_DAGOMA            1137  // Dagoma F5
+#define BOARD_FYSETC_F6_13            1138  // FYSETC F6
+#define BOARD_DUPLICATOR_I3_PLUS      1139  // Wanhao Duplicator i3 Plus
+#define BOARD_VORON                   1140  // VORON Design
+#define BOARD_TRONXY_V3_1_0           1141  // Tronxy TRONXY-V3-1.0
+#define BOARD_Z_BOLT_X_SERIES         1142  // Z-Bolt X Series
+#define BOARD_TT_OSCAR                1143  // TT OSCAR
+#define BOARD_OVERLORD                1144  // Overlord/Overlord Pro
+#define BOARD_HJC2560C_REV1           1145  // ADIMLab Gantry v1
+#define BOARD_HJC2560C_REV2           1146  // ADIMLab Gantry v2
 
 //
 // RAMBo and derivatives
