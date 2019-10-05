@@ -51,9 +51,9 @@
  #define TEMP_0_PIN         13
 
  // Cooling Fans
- #define FAN_BOX_PIN        2
+ #define ORIG_CHAMBER_AUTO_FAN_PIN        2
  #define FAN_BLOWER_PIN     12
- #define FAN_BLOCK_PIN      7
+ #define ORIG_E0_AUTO_FAN_PIN      7
 
  #define FAN_PIN            FAN_BLOWER_PIN
 
