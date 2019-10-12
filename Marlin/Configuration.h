@@ -1091,7 +1091,7 @@
 
   // Set the number of grid points per dimension.
   #define GRID_MAX_POINTS_X 5
-  #define GRID_MAX_POINTS_Y GRID_MAX_POINTS_X
+  #define GRID_MAX_POINTS_Y 3
 
   // Set the boundaries for probing (where the probe can reach).
   //#define LEFT_PROBE_BED_POSITION  X_MIN_POS + (X_PROBE_OFFSET_FROM_EXTRUDER)
