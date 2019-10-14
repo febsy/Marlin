@@ -1,6 +1,6 @@
 
 dev-2.1.x-witbox2 contains configuration and a pins file which works only with a witbox2 that utilizes a BLTouch as bed level sensor. 
-If you are using this branch for an "original" witbox you have to modify Configuration.h, Configuration_adv.h and pins_BQ_CNC.h
+If you are using this branch for an "original" witbox2 you have to modify Configuration.h, Configuration_adv.h and pins_BQ_CNC.h
 # Marlin 3D Printer Firmware
 
 [![Build Status](https://travis-ci.org/MarlinFirmware/Marlin.svg?branch=bugfix-2.0.x)](https://travis-ci.org/MarlinFirmware/Marlin)
